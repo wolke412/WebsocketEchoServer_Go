@@ -11,30 +11,22 @@ import (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	
+	// We don't really care for origin right now :)
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
 }
 
-func getSocketMessage(input string) string {
-	inputArr := strings.Split(input, " ")
-	var result string
-	for i := 1; i < len(inputArr); i++ {
-		result += inputArr[i]
-	}
-	return result
-}
-
-
 func main() {
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 
-		// upgrades http to ws.
+		// Upgrades http to ws.
 		conn, err := upgrader.Upgrade(w, r, nil)
 
 		if err != nil {
-			log.Print("upgrade failed: ", err)
+			log.Print("Upgrade failed: ", err)
 			return
 		}
 
@@ -42,26 +34,29 @@ func main() {
 
 		// Continuosly read and write message
 		for {
+			// Reads message from stream
 			mt, message, err := conn.ReadMessage()
 			if err != nil {
-				log.Println("read failed:", err)
+				log.Println("Read failed:", err)
 				break
 			}
-			input := string(message)
-			// msg := getSocketMessage(input)
+				
+			// Prints to console
+			log.Println("Received: ", string(message))
 
-			log.Println("Received", input)
-
+			
+			// Echoes message back to stream
 			err = conn.WriteMessage(mt, message)
 			if err != nil {
-				log.Println("write failed:", err)
+				log.Println("Write failed:", err)
 				break
 			}
 		}
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "websockets.html")
+		// Server file for testing.
+		http.ServeFile(w, r, "index.html")
 	})
 
 	log.Println("Running serve on port 8080")
