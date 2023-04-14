@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <script>
+    
+    	const HOSTNAME = "localhost"
+    	const PORT = "8080"
+    	const WS_ROUTE = "ws"
+    	
+    	const WEBSOCKET_URI = `ws://${HOSTNAME}:${PORT}/${WS_ROUTE}` 
+
+        
+        const ws = new WebSocket(WEBSOCKET_URI);
+        
+        ws.addEventListener('message', ( e ) => {
+            const { data } = e
+            const result = document.querySelector('textarea')
+
+            const result = document.querySelector('textarea')
+            result.value += "Server said: " + data + "\n"
+        })
+
+        function sendInputMessage () {
+            ws.send(document.querySelector('input').value)
+        }
+
+    </script>
+
+    <h3>Send a message: </h3>
+    <input type="text">
+    <button onclick="sendInputMessage()" > send </button>
+    
+    <br>
+
+    <h4>Response</h4>
+    <textarea id="res"></textarea>
+    
+</body>
+</html>
